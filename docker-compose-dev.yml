@@ -1,0 +1,25 @@
+version: '3.9'
+
+# ============================================================
+# Development compose – uses H2 in-memory, hot reload enabled
+# Usage:  docker-compose -f docker-compose-dev.yml up
+# ============================================================
+
+networks:
+  sms-dev-network:
+    driver: bridge
+
+services:
+  sms-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sms-dev
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - sms-dev-network

@@ -1,0 +1,12 @@
+.git
+.gitignore
+.github
+*.md
+target/
+logs/
+docker/
+*.iml
+.idea/
+.vscode/
+*.DS_Store
+src/test/

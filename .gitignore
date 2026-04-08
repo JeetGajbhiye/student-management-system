@@ -1,0 +1,59 @@
+# ============================================================
+# .gitignore  – Student Management System
+# ============================================================
+
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE – IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# IDE – Eclipse
+.project
+.classpath
+.settings/
+*.launch
+
+# IDE – VS Code
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Environment / secrets
+.env
+*.env
+!*.env.example
+application-local.properties
+
+# Docker
+docker/mysql-data/
+
+# Spring Boot
+spring.log
+
+# JaCoCo coverage
+*.exec
+
+# Build artifacts
+*.jar
+*.war
+*.ear
+dist/
+build/

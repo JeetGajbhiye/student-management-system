@@ -1,0 +1,255 @@
+{
+  "info": {
+    "name": "Student Management System API",
+    "description": "Complete Postman collection for SMS REST API. Set baseUrl variable to http://localhost:8080",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",      "value": "http://localhost:8080" },
+    { "key": "accessToken",  "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (Admin)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "var res = pm.response.json();",
+            "pm.collectionVariables.set('accessToken',  res.data.accessToken);",
+            "pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+            "pm.test('Login successful', () => pm.response.to.have.status(200));"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"newuser\",\n  \"email\": \"newuser@sms.com\",\n  \"password\": \"Password@123\",\n  \"firstName\": \"New\",\n  \"lastName\": \"User\",\n  \"roles\": [\"TEACHER\"]\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh-token", "host": ["{{baseUrl}}"], "path": ["api","auth","refresh-token"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "Get All Departments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/departments", "host": ["{{baseUrl}}"], "path": ["api","departments"] }
+          }
+        },
+        {
+          "name": "Get Department By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/departments/1", "host": ["{{baseUrl}}"], "path": ["api","departments","1"] }
+          }
+        },
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Mechanical Engineering\",\n  \"code\": \"MECH\",\n  \"description\": \"Department of Mechanical Engineering\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/departments", "host": ["{{baseUrl}}"], "path": ["api","departments"] }
+          }
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Mechanical Engineering Updated\",\n  \"code\": \"MECH\",\n  \"description\": \"Updated description\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/departments/1", "host": ["{{baseUrl}}"], "path": ["api","departments","1"] }
+          }
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/departments/1", "host": ["{{baseUrl}}"], "path": ["api","departments","1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/students?page=0&size=10&sortBy=firstName&sortDir=asc", "host": ["{{baseUrl}}"], "path": ["api","students"], "query": [{"key":"page","value":"0"},{"key":"size","value":"10"},{"key":"sortBy","value":"firstName"},{"key":"sortDir","value":"asc"}] }
+          }
+        },
+        {
+          "name": "Get Student By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/students/1", "host": ["{{baseUrl}}"], "path": ["api","students","1"] }
+          }
+        },
+        {
+          "name": "Search Students",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/students/search?keyword=alice&page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","students","search"], "query": [{"key":"keyword","value":"alice"},{"key":"page","value":"0"},{"key":"size","value":"10"}] }
+          }
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Rahul\",\n  \"lastName\": \"Sharma\",\n  \"email\": \"rahul@student.com\",\n  \"phone\": \"9876543220\",\n  \"dateOfBirth\": \"2003-06-15\",\n  \"gender\": \"MALE\",\n  \"address\": \"456 MG Road, Raipur\",\n  \"enrollmentDate\": \"2024-07-01\",\n  \"departmentId\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/students", "host": ["{{baseUrl}}"], "path": ["api","students"] }
+          }
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Rahul\",\n  \"lastName\": \"Sharma\",\n  \"email\": \"rahul.updated@student.com\",\n  \"phone\": \"9876543220\",\n  \"departmentId\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/students/1", "host": ["{{baseUrl}}"], "path": ["api","students","1"] }
+          }
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/students/1", "host": ["{{baseUrl}}"], "path": ["api","students","1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "Get All Courses",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/courses?page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api","courses"] }
+          }
+        },
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Web Development\",\n  \"code\": \"CS501\",\n  \"description\": \"HTML, CSS, JavaScript, and React\",\n  \"credits\": 4,\n  \"departmentId\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/courses", "host": ["{{baseUrl}}"], "path": ["api","courses"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enrollments",
+      "item": [
+        {
+          "name": "Enroll Student",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"studentId\": 1,\n  \"courseId\": 2,\n  \"enrollmentDate\": \"2024-08-01\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/enrollments", "host": ["{{baseUrl}}"], "path": ["api","enrollments"] }
+          }
+        },
+        {
+          "name": "Get Student Enrollments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/enrollments/student/1", "host": ["{{baseUrl}}"], "path": ["api","enrollments","student","1"] }
+          }
+        },
+        {
+          "name": "Update Enrollment Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"COMPLETED\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/enrollments/1/status", "host": ["{{baseUrl}}"], "path": ["api","enrollments","1","status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Grades",
+      "item": [
+        {
+          "name": "Assign Grade",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"enrollmentId\": 1,\n  \"marksObtained\": 88.5,\n  \"maxMarks\": 100,\n  \"examDate\": \"2024-11-20\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/grades", "host": ["{{baseUrl}}"], "path": ["api","grades"] }
+          }
+        },
+        {
+          "name": "Get Grades By Student",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/grades/student/1", "host": ["{{baseUrl}}"], "path": ["api","grades","student","1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/dashboard/stats", "host": ["{{baseUrl}}"], "path": ["api","dashboard","stats"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actuator",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/actuator/health", "host": ["{{baseUrl}}"], "path": ["actuator","health"] } }
+        },
+        {
+          "name": "App Info",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/actuator/info", "host": ["{{baseUrl}}"], "path": ["actuator","info"] } }
+        }
+      ]
+    }
+  ]
+}

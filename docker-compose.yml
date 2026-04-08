@@ -1,0 +1,89 @@
+version: '3.9'
+
+# ============================================================
+# Student Management System - Docker Compose
+# Services: sms-app  |  mysql  |  adminer
+# ============================================================
+
+networks:
+  sms-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+
+services:
+
+  # --------- MySQL 8 ---------
+  mysql:
+    image: mysql:8.0
+    container_name: sms-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE:      ${DB_NAME:-student_management}
+      MYSQL_USER:          ${DB_USERNAME:-smsuser}
+      MYSQL_PASSWORD:      ${DB_PASSWORD:-smspassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - sms-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # --------- Spring Boot App ---------
+  sms-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sms-application
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE:     prod
+      DB_HOST:                    mysql
+      DB_PORT:                    3306
+      DB_NAME:                    ${DB_NAME:-student_management}
+      DB_USERNAME:                ${DB_USERNAME:-smsuser}
+      DB_PASSWORD:                ${DB_PASSWORD:-smspassword}
+      JWT_SECRET:                 ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+      JWT_EXPIRY_MS:              ${JWT_EXPIRY_MS:-86400000}
+      JWT_REFRESH_EXPIRY_MS:      ${JWT_REFRESH_EXPIRY_MS:-604800000}
+      MAIL_ENABLED:               ${MAIL_ENABLED:-false}
+      MAIL_USERNAME:              ${MAIL_USERNAME:-}
+      MAIL_PASSWORD:              ${MAIL_PASSWORD:-}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - sms-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q UP || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  # --------- Adminer (DB UI) ---------
+  adminer:
+    image: adminer:4
+    container_name: sms-adminer
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    ports:
+      - "8081:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+    networks:
+      - sms-network
