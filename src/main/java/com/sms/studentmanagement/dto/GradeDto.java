@@ -3,6 +3,7 @@ package com.sms.studentmanagement.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -19,11 +20,11 @@ public class GradeDto {
 
         @NotNull(message = "Marks obtained is required")
         @DecimalMin(value = "0.0", message = "Marks cannot be negative")
-        private Double marksObtained;
+        private BigDecimal  marksObtained;
 
         @NotNull(message = "Max marks is required")
         @DecimalMin(value = "1.0", message = "Max marks must be at least 1")
-        private Double maxMarks;
+        private BigDecimal maxMarks;
 
         @Size(max = 5, message = "Grade letter must not exceed 5 characters")
         private String gradeLetter;

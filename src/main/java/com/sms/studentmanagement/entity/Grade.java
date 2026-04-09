@@ -3,6 +3,7 @@ package com.sms.studentmanagement.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -23,10 +24,10 @@ public class Grade extends BaseEntity {
     private Enrollment enrollment;
 
     @Column(name = "marks_obtained", nullable = false)
-    private Double marksObtained;
+    private BigDecimal marksObtained;
 
     @Column(name = "max_marks", nullable = false)
-    private Double maxMarks;
+    private BigDecimal  maxMarks;
 
     @Column(name = "grade_letter", length = 5)
     private String gradeLetter;
@@ -38,7 +39,9 @@ public class Grade extends BaseEntity {
     private LocalDate examDate;
 
     public Double getPercentage() {
-        if (maxMarks == null || maxMarks == 0) return 0.0;
-        return (marksObtained / maxMarks) * 100;
+        if (maxMarks == null || maxMarks.compareTo(BigDecimal.ZERO) == 0) return 0.0;
+        return marksObtained.divide(maxMarks, 4, java.math.RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100"))
+                .doubleValue();
     }
 }

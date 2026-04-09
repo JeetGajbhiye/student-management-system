@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,8 +37,8 @@ public class GradeServiceImpl implements GradeService {
         Enrollment enrollment = enrollmentRepository.findById(request.getEnrollmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment", "id", request.getEnrollmentId()));
 
-        if (request.getMarksObtained() > request.getMaxMarks()) {
-            throw new BadRequestException("Marks obtained cannot exceed max marks");
+        if (request.getMarksObtained().compareTo(request.getMaxMarks()) > 0) {
+            throw new IllegalArgumentException("Marks obtained cannot be greater than max marks");
         }
 
         Grade grade = Grade.builder()
@@ -75,8 +77,8 @@ public class GradeServiceImpl implements GradeService {
         Grade grade = gradeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Grade", "id", id));
 
-        if (request.getMarksObtained() > request.getMaxMarks()) {
-            throw new BadRequestException("Marks obtained cannot exceed max marks");
+        if (request.getMarksObtained().compareTo(request.getMaxMarks()) > 0) {
+            throw new IllegalArgumentException("Invalid marks");
         }
 
         grade.setMarksObtained(request.getMarksObtained());
@@ -113,13 +115,17 @@ public class GradeServiceImpl implements GradeService {
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
-    private String computeGradeLetter(double marks, double maxMarks) {
-        double pct = (marks / maxMarks) * 100;
-        if (pct >= 90) return "A+";
-        if (pct >= 80) return "A";
-        if (pct >= 70) return "B";
-        if (pct >= 60) return "C";
-        if (pct >= 50) return "D";
+    private String computeGradeLetter(BigDecimal marks, BigDecimal maxMarks) {
+
+        BigDecimal pct = marks
+                .divide(maxMarks, 2, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
+
+        if (pct.compareTo(BigDecimal.valueOf(90)) >= 0) return "A+";
+        if (pct.compareTo(BigDecimal.valueOf(80)) >= 0) return "A";
+        if (pct.compareTo(BigDecimal.valueOf(70)) >= 0) return "B";
+        if (pct.compareTo(BigDecimal.valueOf(60)) >= 0) return "C";
+        if (pct.compareTo(BigDecimal.valueOf(50)) >= 0) return "D";
         return "F";
     }
 
@@ -130,8 +136,8 @@ public class GradeServiceImpl implements GradeService {
                 .enrollmentId(g.getEnrollment().getId())
                 .studentName(studentName)
                 .courseTitle(g.getEnrollment().getCourse().getTitle())
-                .marksObtained(g.getMarksObtained())
-                .maxMarks(g.getMaxMarks())
+                .marksObtained(g.getMarksObtained().doubleValue())
+                .maxMarks(g.getMaxMarks().doubleValue())
                 .percentage(g.getPercentage())
                 .gradeLetter(g.getGradeLetter())
                 .remarks(g.getRemarks())
