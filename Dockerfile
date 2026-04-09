@@ -29,5 +29,6 @@ EXPOSE 8080
 ENTRYPOINT ["java", \
   "-XX:+UseContainerSupport", \
   "-XX:MaxRAMPercentage=75.0", \
+  "-XX:TieredStopAtLevel=1", \
   "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod}", \
   "org.springframework.boot.loader.launch.JarLauncher"]
