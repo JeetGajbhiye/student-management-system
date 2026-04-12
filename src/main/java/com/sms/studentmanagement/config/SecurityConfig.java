@@ -92,7 +92,8 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/", "/actuator/**", "/error").permitAll()
-                // Departments & Courses – read is public for authenticated users
+                    .requestMatchers("/api/api/**").permitAll()
+                    // Departments & Courses – read is public for authenticated users
                 .requestMatchers(HttpMethod.GET,    "/api/departments/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers(HttpMethod.GET,    "/api/courses/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers(HttpMethod.POST,   "/api/departments/**").hasRole("ADMIN")
